@@ -1,0 +1,106 @@
+<html>
+<p>
+//笔试题：请在你熟悉的编辑器或IDE里写好代码后用屏幕截图工具截取并提交 
+* * 实现函数parse，将服务端返回的公交数据按下面定义的规则优先级输出：
+* * 1. 输出常规线路，并按照线路数字从小到大排列(如20路，301路等这些都是常规路线)
+* 2. 输出地铁线路，并按照线路数字从小到大排序
+* 3. 输出其它线路，并按照线路名称长短从小到大排序
+* * parse的函数签名是: * declare function parse(res: Object): Object;
+* * 下面代码为示例数据按照上述规则和函数签名转换后结果，请参照该示例数据实现对应效果
+const res = { code: 0, data: { lines: '20路,301路,5路,地铁5号线,机场大巴线,107路,机场快轨', lineids: 'lzbd,lwes,lxid,lwic,lwdf,ldfx,loin', linedetails: { lwdf: { name: '机场大巴线' }, lwes: { name: '301路' }, lwic: { name: '地铁5号线' }, ldfx: { name: '107路' }, lzbd: { name: '20路' }, lxid: { name: '5路' }, loin: { name: '机场快轨' } } } } const data = parse(res) // data经过parse函数转化后，变成以下结构 /* [{ lxid: { name: '5路' } }, { lzbd: { name: '20路' } }, { ldfx: { name: '107路' } }, { lwes: { name: '301路' } }, { lwic: { name: '地铁5号线' } }, { loin: { name: '机场快轨' } }, { lwdf: { name: '机场大巴线' } }] */
+<br/><br/><br/><br/>
+<span style="color:red;">结果在控制台ᕦ(･ㅂ･)ᕤ</span>
+ 
+</p>
+</html>
+<script>
+
+ 
+    const res = {
+        code: 0,
+        data: {
+            lines: '20路,301路,5路,地铁5号线,机场大巴线,107路,机场快轨',
+            lineids: 'lzbd,lwes,lxid,lwic,lwdf,ldfx,loin',
+            linedetails: {
+                lwdf: {
+                    name: '机场大巴线'
+                },
+                lwes: {
+                    name: '301路'
+                },
+                lwic: {
+                    name: '地铁5号线'
+                },
+                ldfx: {
+                    name: '107路'
+                },
+                lzbd: {
+                    name: '20路'
+                },
+                lxid: {
+                    name: '5路'
+                },
+
+                loin: {
+                    name: '机场快轨'
+                }
+            }
+        }
+    }
+
+
+    var busArr = [] // 公交
+    var subArr = [] // 地铁
+    var othArr = [] // 其他
+    function parse(res) {
+        var resultArr = [] // 结果
+        var lineidsArr = res.data.lineids.split(',')
+        var linesArr = res.data.lines.split(',')
+        var linedetails = res.data.linedetails
+        // 筛选
+        linesArr.map((item, ind) => {
+            if (/路/.test(item)) {
+                filter(busArr, lineidsArr[ind], parseInt(item))
+            } else if (/地铁/.test(item)) {
+                var s = item.indexOf('铁')
+                var e = item.indexOf('号')
+                filter(subArr, lineidsArr[ind], item.substring(s + 1, e))
+            } else {
+                filter(othArr, lineidsArr[ind], item.length)
+            }
+        })
+
+        sumArr = busArr.sort(compare('lines')).concat(subArr.sort(compare('lines')), othArr.sort(compare('lines')))
+        sumArr.map((item, ind) => {
+            for (var _item in linedetails) {
+                if (_item === item.lineids) {
+                    let key = _item
+                    let obj = {}
+                    obj[key] = linedetails[_item]
+                    resultArr.push(obj)
+                }
+            }
+        })
+        return resultArr
+    }
+
+
+    // 分类
+    function filter(arr, lineids, lines) {
+        arr.push({
+            lineids,
+            lines
+        })
+    }
+
+    // 排序
+    function compare(p) {
+        return function (a, b) {
+            var v1 = a[p]
+            var v2 = b[p]
+            return v1 - v2
+        }
+    }
+
+console.log(parse(res))
+</script>
