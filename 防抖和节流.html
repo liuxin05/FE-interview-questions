@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<body>
+  <h1>防抖和节流</h1>
+  <input type="text" placeholder="请输入您的电话">
+  <div class="box" style="width:300px;height:300px;background:red;"></div>
+  <script>
+    let telInput = document.querySelector('input')
+    telInput.addEventListener('input', antShark(demo, 2000))
+    //防抖  =》将多次合并成一次（固定时间内，事件只允许发生一次）
+    function antShark (fn, wait) {
+      let timer = null
+      return args => {
+        if (timer) clearTimeout(timer)
+        timer = setTimeout(fn, wait)
+      }
+    }
+
+    function demo () { console.log('注意！我发送请求啦~') }
+
+    //节流  =》在一定时间内，只调用一次函数(一定时间内多个事件合并成一个)
+    //应用场景：1.表单提交  2.高频监听事件
+    let box = document.querySelector('.box')
+    box.addEventListener('touchmove', throttle(demo, 2000))
+    //目前案例请在模拟h5上操作
+    function throttle (event, time) {
+      let timer = null
+      return function () {
+        if (!timer) {
+          timer = setTimeout(() => {
+            event()
+            timer = null
+          }, time)
+        }
+      }
+    }
+
+
+  </script>
+</body>
+
+</html>
